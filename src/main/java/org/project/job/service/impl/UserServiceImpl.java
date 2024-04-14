@@ -24,9 +24,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User registerUser(UserDto userDto) {
-        Role role = roleRepository.findByName("USER");
+        Role role = roleRepository.findByName("CANDIDATE");
         if(role == null) {
-            role = new Role("USER");
+            role = new Role("CANDIDATE");
         }
         Optional<User> check = userRepository.findByEmail(userDto.getEmail());
 
