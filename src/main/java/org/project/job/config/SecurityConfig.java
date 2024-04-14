@@ -22,6 +22,8 @@ public class SecurityConfig {
     private UserDetailsService userDetailsService;
 
     private final static String[] paths = {
+            "/**",
+            "/registration/**"
     };
 
     private final static String[] authenticatedPath = {
@@ -42,7 +44,7 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .formLogin(
-                        form -> form.loginPage("/login")
+                        form -> form
                                 .loginProcessingUrl("/login")
                                 .usernameParameter("email")
                                 .defaultSuccessUrl("/home")
