@@ -5,4 +5,6 @@ import org.project.job.entity.User;
 
 public interface UserService {
     User registerUser(UserDto userDto);
+
+    User getUserById(Long id);
 }
