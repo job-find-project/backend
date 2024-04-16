@@ -1,5 +1,11 @@
 package org.project.job.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.project.job.entity.User;
+import org.project.job.entity.VerificationToken;
+import org.project.job.repository.UserRepository;
+import org.project.job.repository.VerificationTokenRepository;
+import org.project.job.response.UserDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,18 +14,23 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    @Autowired private UserDetailsService userDetailsService;
+    @Autowired private VerificationTokenRepository verificationTokenRepository;
+    @Autowired private UserRepository userRepository;
 
     private final static String[] paths = {
             "/**",
@@ -45,10 +56,23 @@ public class SecurityConfig {
                 )
                 .formLogin(
                         form -> form
-                                .loginPage("/auth/login")
-                                .loginProcessingUrl("/auth/login")
+                                .loginProcessingUrl("/login")
                                 .usernameParameter("email")
-                                .defaultSuccessUrl("/home")
+                                .successHandler((request, response, authentication) -> {
+                                    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                                    User user = userRepository.findByEmail(userDetails.getUsername()).get();
+                                    VerificationToken verificationToken = verificationTokenRepository.findByUser(user);
+
+                                    UserDetailsResponse userDetailsResponse = UserDetailsResponse.builder()
+                                            .id(user.getId())
+                                            .userName(userDetails.getUsername())
+                                            .authorities((List<GrantedAuthority>) userDetails.getAuthorities())
+                                            .token(verificationToken.getToken())
+                                            .build();
+
+                                    response.setContentType("application/json");
+                                    new ObjectMapper().writeValue(response.getWriter(), userDetailsResponse);
+                                })
                                 .permitAll()
                 )
                 .logout(
@@ -56,6 +80,7 @@ public class SecurityConfig {
                                 .clearAuthentication(true)
                                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                                 .logoutSuccessUrl("/home")
+                                .deleteCookies("JSESSIONID")
                                 .permitAll()
                 )
                 .build();
