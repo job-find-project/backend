@@ -1,9 +1,6 @@
 package org.project.job.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +18,18 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
+
+    @Temporal(TemporalType.DATE)
     private Date createdDate;
+
     private Integer starNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User userReview;
+
+    @PrePersist
+    private void createdDate() {
+        this.createdDate = new Date();
+    }
 }
