@@ -1,10 +1,14 @@
 package org.project.job.service.impl;
 
+import jakarta.transaction.Transactional;
 import org.project.job.dto.UserDto;
+import org.project.job.entity.Review;
 import org.project.job.entity.Role;
 import org.project.job.entity.User;
+import org.project.job.repository.ReviewRepository;
 import org.project.job.repository.RoleRepository;
 import org.project.job.repository.UserRepository;
+import org.project.job.repository.VerificationTokenRepository;
 import org.project.job.service.UserService;
 import org.project.job.utility.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,8 @@ public class UserServiceImpl implements UserService {
     @Autowired private UserRepository userRepository;
     @Autowired private ImageUtils imageUtils;
     @Autowired private RoleRepository roleRepository;
+    @Autowired private VerificationTokenRepository verificationTokenRepository;
+    @Autowired private ReviewRepository reviewRepository;
 
     @Override
     public User registerUser(UserDto userDto) {
@@ -46,5 +52,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id).get();
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserById(Long id) {
+        User user = userRepository.findById(id).get();
+        verificationTokenRepository.deleteByUser(user);
+        reviewRepository.deleteAll(user.getReviews());
+        userRepository.deleteById(id);
     }
 }

@@ -31,10 +31,10 @@ public class User {
     private String city;
     private Boolean isEnabled = false;
 
-    @OneToMany(mappedBy = "userReview", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userReview", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Review> reviews;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(

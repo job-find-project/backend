@@ -11,6 +11,8 @@ import org.project.job.service.VerificationTokenService;
 import org.project.job.utility.ApplicationUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -27,18 +29,11 @@ public class RegistrationController {
     @Autowired private VerificationTokenService verificationTokenService;
     @Autowired private ApplicationEventPublisher publisher;
 
-    @GetMapping("/register-form")
-    public ModelAndView showRegistrationForm() {
-        ModelAndView modelAndView = new ModelAndView("register");
-        modelAndView.addObject("user", new UserDto());
-        return modelAndView;
-    }
-
     @PostMapping("/register")
-    public RedirectView registerUser(@Valid @ModelAttribute UserDto userDto,
-                                     BindingResult result, Model model, HttpServletRequest request) {
+    public ResponseEntity<?> registerUser(@Valid @ModelAttribute UserDto userDto,
+                                       BindingResult result, Model model, HttpServletRequest request) {
         if(!userDto.getPassword().equals(userDto.getConfirmPassword())) {
-            return new RedirectView("/registration/register-form?invalidc_f");
+            return ResponseEntity.badRequest().body("Vui lòng nhập đúng mật khẩu");
         }
         if(result.hasErrors()) {
             model.addAttribute("user", userDto);
@@ -46,26 +41,26 @@ public class RegistrationController {
         System.out.println(result);
         User user = userService.registerUser(userDto);
         if(user == null)
-            return new RedirectView("/registration/register-form?used");
+            return ResponseEntity.badRequest().body("Email đã được sử dụng");
         publisher.publishEvent(new RegistrationCompleteEvent(user, ApplicationUrl.getUrl(request)));
-        return new RedirectView("/registration/register-form?success");
+        return ResponseEntity.ok("Đăng ký tài khoản thành công, vào email để xác thực tài khoản");
     }
 
     @GetMapping("/verifyEmail")
-    public RedirectView verifyEmail(@RequestParam String token) {
+    public ResponseEntity<?> verifyEmail(@RequestParam String token) {
         Optional<VerificationToken> verificationTokenOptional =
                 verificationTokenService.findByToken(token);
         if(verificationTokenOptional.isPresent() && verificationTokenOptional.get().getUser().getIsEnabled()) {
-            return new RedirectView("/login?verified");
+            return ResponseEntity.ok("Tài khoản đã được xác thực");
         }
         String result = verificationTokenService.validateVerificationToken(token);
         switch (result.toLowerCase()) {
             case "valid":
-                return new RedirectView("/login?valid");
+                return ResponseEntity.ok("Xác thực tài khoản thành công");
             case "invalid":
-                return new RedirectView("/error?invalid");
+                return ResponseEntity.badRequest().body("Xác thực không hợp lệ");
             default:
-                return new RedirectView("/error?expired");
+                return ResponseEntity.badRequest().body("Token hết thời hạn");
         }
     }
 

@@ -2,6 +2,7 @@ package org.project.job.security;
 
 import lombok.Data;
 import org.project.job.entity.User;
+import org.project.job.entity.VerificationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

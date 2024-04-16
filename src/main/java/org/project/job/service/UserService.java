@@ -7,4 +7,6 @@ public interface UserService {
     User registerUser(UserDto userDto);
 
     User getUserById(Long id);
+
+    void deleteUserById(Long id);
 }
