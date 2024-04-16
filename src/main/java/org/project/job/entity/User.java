@@ -31,6 +31,9 @@ public class User {
     private String city;
     private Boolean isEnabled = false;
 
+    @OneToMany(mappedBy = "userReview", cascade = CascadeType.ALL)
+    private List<Review> reviews;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_role",
