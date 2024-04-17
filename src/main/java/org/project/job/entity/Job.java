@@ -26,7 +26,11 @@ public class Job {
     private String workAddress;
     private Boolean isActive;
     private String position;
+
+    @Lob
+    @Column(length = 1000000000)
     private String description;
+
     private String diplomaRequire;
     private String workRequire;
     private String genderRequire;
@@ -34,7 +38,7 @@ public class Job {
     @Temporal(TemporalType.DATE)
     private Date createdDate;
 
-    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<JobType> types;
 
     @ManyToOne

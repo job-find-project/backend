@@ -1,6 +1,7 @@
 package org.project.job.controller;
 
 import org.project.job.dto.EmployerDto;
+import org.project.job.dto.JobDto;
 import org.project.job.service.EmployerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,12 @@ public class EmployerController {
                 ResponseEntity.badRequest().body("Token không hợp lệ");
     }
 
-
+    @PostMapping("post_job")
+    public ResponseEntity postJob(@RequestParam String token, JobDto jobDto) {
+        String message = employerService.postJob(token, jobDto);
+        return message.equals("valid") ?
+                ResponseEntity.ok("Đăng công việc thành công") :
+                ResponseEntity.badRequest().body(message);
+    }
 
 }

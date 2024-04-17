@@ -41,6 +41,7 @@ public class SecurityConfig {
     };
 
     private final static String[] admin = {
+            "/admin/**"
     };
 
     @Bean

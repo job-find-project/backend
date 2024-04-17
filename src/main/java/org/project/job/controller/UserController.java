@@ -1,4 +1,4 @@
-package org.project.job.config;
+package org.project.job.controller;
 
 import org.project.job.entity.User;
 import org.project.job.service.UserService;
