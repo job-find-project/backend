@@ -21,6 +21,6 @@ public class JobType {
     private String type;
 
     @ManyToOne
-    @JoinColumn(name = "job_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "job_id", referencedColumnName = "id", nullable = true)
     private Job job;
 }
