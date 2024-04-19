@@ -98,15 +98,16 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*"); // Cấp phép truy cập từ mọi origin
-        configuration.addAllowedMethod("*"); // Cấp phép sử dụng mọi HTTP method
-        configuration.addAllowedHeader("*"); // Cấp phép sử dụng mọi header
-        configuration.setAllowCredentials(true); // Cho phép sử dụng cookies khi truy cập từ các origin khác
+        configuration.addAllowedOrigin("http://localhost:8000");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
