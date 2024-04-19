@@ -40,6 +40,10 @@ public class SecurityConfig {
     private final static String[] authenticatedPath = {
     };
 
+    private final static String[] employer = {
+            "/employer/**"
+    };
+
     private final static String[] admin = {
             "/admin/**"
     };
@@ -47,10 +51,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         author -> author
                                 .requestMatchers(authenticatedPath).authenticated()
+                                .requestMatchers(employer).hasAnyAuthority("EMPLOYER")
                                 .requestMatchers(admin).hasAnyAuthority("ADMIN")
                                 .requestMatchers(paths).permitAll()
                                 .anyRequest().authenticated()
