@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface JobService {
     List<Job> getJobList(String token);
+
+    void toggleJob(String token, Long id);
 }

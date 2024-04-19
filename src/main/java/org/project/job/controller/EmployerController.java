@@ -27,8 +27,8 @@ public class EmployerController {
                 ResponseEntity.badRequest().body("Token không hợp lệ");
     }
 
-    @PostMapping("post_job")
-    public ResponseEntity postJob(@RequestParam String token, JobDto jobDto) {
+    @PostMapping("/post_job")
+    public ResponseEntity<?> postJob(@RequestParam String token, JobDto jobDto) {
         String message = employerService.postJob(token, jobDto);
         return message.equals("valid") ?
                 ResponseEntity.ok("Đăng công việc thành công") :
@@ -36,8 +36,17 @@ public class EmployerController {
     }
 
     @GetMapping("/getJobList")
-    public List<Job> getJobList(@RequestParam String token) {
-        return jobService.getJobList(token);
+    public ResponseEntity<?> getJobList(@RequestParam String token) {
+        List<Job> jobs = jobService.getJobList(token);
+        return jobs == null ?
+                ResponseEntity.badRequest().body("Token không hợp lệ") :
+                ResponseEntity.ok(jobs);
+    }
+
+    @PatchMapping("/toggleJob")
+    public ResponseEntity<?> toggleJob(@RequestParam String token, @RequestParam Long id) {
+        jobService.toggleJob(token, id);
+        return ResponseEntity.ok("Đã ẩn công việc");
     }
 
 }
