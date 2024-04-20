@@ -28,7 +28,7 @@ public class EmployerController {
     }
 
     @PostMapping("/post_job")
-    public ResponseEntity<?> postJob(@RequestParam String token, JobDto jobDto) {
+    public ResponseEntity<?> postJob(@RequestParam String token, @ModelAttribute JobDto jobDto) {
         String message = employerService.postJob(token, jobDto);
         return message.equals("valid") ?
                 ResponseEntity.ok("Đăng công việc thành công") :

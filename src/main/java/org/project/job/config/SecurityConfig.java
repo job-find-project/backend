@@ -1,6 +1,7 @@
 package org.project.job.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import org.project.job.entity.User;
 import org.project.job.entity.VerificationToken;
 import org.project.job.repository.UserRepository;
@@ -9,8 +10,11 @@ import org.project.job.response.UserDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,16 +24,25 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+@EnableWebMvc
+@CrossOrigin("*")
+public class SecurityConfig{
 
     @Autowired private UserDetailsService userDetailsService;
     @Autowired private VerificationTokenRepository verificationTokenRepository;
@@ -37,7 +50,8 @@ public class SecurityConfig {
 
     private final static String[] paths = {
             "/**",
-            "/registration/**"
+            "/registration/**",
+            "user/login"
     };
 
     private final static String[] authenticatedPath = {
@@ -54,58 +68,27 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(cor -> cor.disable())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         author -> author
-                                .requestMatchers(authenticatedPath).authenticated()
-                                .requestMatchers(employer).hasAnyAuthority("EMPLOYER")
-                                .requestMatchers(admin).hasAnyAuthority("ADMIN")
+//                                .requestMatchers(authenticatedPath).authenticated()
+//                                .requestMatchers(employer).hasAnyAuthority("EMPLOYER")
+//                                .requestMatchers(admin).hasAnyAuthority("ADMIN")
                                 .requestMatchers(paths).permitAll()
+//                                .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                                 .anyRequest().authenticated()
-                )
-                .formLogin(
-                        form -> form
-                                .loginProcessingUrl("/login")
-                                .usernameParameter("email")
-                                .successHandler((request, response, authentication) -> {
-                                    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                                    User user = userRepository.findByEmail(userDetails.getUsername()).get();
-                                    VerificationToken verificationToken = verificationTokenRepository.findByUser(user);
-
-                                    UserDetailsResponse userDetailsResponse = UserDetailsResponse.builder()
-                                            .id(user.getId())
-                                            .userName(userDetails.getUsername())
-                                            .authorities((List<GrantedAuthority>) userDetails.getAuthorities())
-                                            .token(verificationToken.getToken())
-                                            .build();
-
-                                    response.setContentType("application/json");
-                                    new ObjectMapper().writeValue(response.getWriter(), userDetailsResponse);
-                                })
-                                .permitAll()
                 )
                 .logout(
                         log -> log.invalidateHttpSession(true)
                                 .clearAuthentication(true)
                                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                                .logoutSuccessUrl("/home")
+//                                .logoutSuccessUrl("/home")
                                 .deleteCookies("JSESSIONID")
                                 .permitAll()
                 )
+                .httpBasic(Customizer.withDefaults())
                 .build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:8000");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 
 

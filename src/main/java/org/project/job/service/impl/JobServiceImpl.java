@@ -6,6 +6,8 @@ import org.project.job.repository.JobRepository;
 import org.project.job.repository.VerificationTokenRepository;
 import org.project.job.service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,5 +32,12 @@ public class JobServiceImpl implements JobService {
     public void toggleJob(String token, Long id) {
         Job job = jobRepository.findById(id).get();
         job.setIsActive(!job.getIsActive());
+    }
+
+    @Override
+    public List<Job> getJobs(Integer pageSize, Integer pageNumber, String sort) {
+        Pageable page = PageRequest.of(pageNumber, pageSize);
+        List<Job> jobs = (List<Job>) jobRepository.findAll(page);
+        return jobs;
     }
 }
