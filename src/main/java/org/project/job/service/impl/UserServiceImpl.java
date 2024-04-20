@@ -14,6 +14,7 @@ import org.project.job.response.UserDetailsResponse;
 import org.project.job.service.UserService;
 import org.project.job.utility.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -72,12 +73,12 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> login(String email, String password) {
         Optional<User> userOptional = userRepository.findByEmail(email);
         if(userOptional.isEmpty())
-            return ResponseEntity.badRequest().body("not_register");
+            return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body("not_register");
         User user = userOptional.get();
         if(!user.getIsEnabled())
             return ResponseEntity.badRequest().body("not_verified");
         if(!(password.hashCode() + "").equals(user.getPassword()))
-            return ResponseEntity.badRequest().body("password_incorrect");
+            return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body("password_incorrect");
         VerificationToken verificationToken = verificationTokenRepository.findByUser(user);
         UserDetailsResponse userDetailsResponse = UserDetailsResponse.builder()
                 .id(user.getId())
