@@ -18,7 +18,7 @@ public class HomeController {
     @GetMapping("/getJobs")
     public ResponseEntity<?> getJobs(@RequestParam Integer pageNumber,
                                      @RequestParam Integer pageSize,
-                                     @RequestParam String sort) {
+                                     @RequestParam(required = false) String sort) {
         List<Job> jobs = jobService.getJobs(pageSize, pageNumber, sort);
         return ResponseEntity.ok(jobs);
     }
