@@ -8,4 +8,6 @@ public interface JobService {
     List<Job> getJobList(String token);
 
     void toggleJob(String token, Long id);
+
+    List<Job> getJobs(Integer pageSize, Integer pageNumber, String sort);
 }

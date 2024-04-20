@@ -26,6 +26,6 @@ public class Employer {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL)
-    private List<Job> jobs;
+//    @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL)
+//    private List<Job> jobs;
 }
