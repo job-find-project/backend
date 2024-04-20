@@ -37,7 +37,7 @@ public class JobServiceImpl implements JobService {
     @Override
     public List<Job> getJobs(Integer pageSize, Integer pageNumber, String sort) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
-        List<Job> jobs = (List<Job>) jobRepository.findAll(page);
+        List<Job> jobs = jobRepository.findAll(page).getContent();
         return jobs;
     }
 }
