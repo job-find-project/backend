@@ -1,7 +1,10 @@
 package org.project.job.service.impl;
 
+import org.project.job.entity.Employer;
 import org.project.job.entity.Job;
+import org.project.job.entity.User;
 import org.project.job.entity.VerificationToken;
+import org.project.job.repository.EmployerRepository;
 import org.project.job.repository.JobRepository;
 import org.project.job.repository.VerificationTokenRepository;
 import org.project.job.service.JobService;
@@ -18,6 +21,7 @@ public class JobServiceImpl implements JobService {
 
     @Autowired private JobRepository jobRepository;
     @Autowired private VerificationTokenRepository verificationTokenRepository;
+    @Autowired private EmployerRepository employerRepository;
 
     @Override
     public List<Job> getJobList(String token) {
@@ -25,7 +29,9 @@ public class JobServiceImpl implements JobService {
         if(verificationToken.isEmpty()) {
            return null;
         }
-        return jobRepository.findAll();
+        User user = verificationToken.get().getUser();
+        Employer employer = employerRepository.findByUser(user);
+        return jobRepository.findByEmployer(employer);
     }
 
     @Override

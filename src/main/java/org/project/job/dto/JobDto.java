@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class JobDto {
+    private String token;
     private String title;
     private Integer salary;
     private String payrollPayment;
