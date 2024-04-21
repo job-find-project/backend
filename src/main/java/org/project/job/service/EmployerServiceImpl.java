@@ -39,6 +39,9 @@ public class EmployerServiceImpl implements EmployerService{
             roleRepository.save(role);
             user.getRoles().add(role);
         } else {
+            if(user.getRoles().contains(role)) {
+                return "haved";
+            }
             user.getRoles().add(role);
         }
 

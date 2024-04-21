@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class EmployerDto {
+    private String token;
     private String fullName;
     private String mobilePhone;
     private String companyName;

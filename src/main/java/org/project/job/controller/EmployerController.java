@@ -6,6 +6,7 @@ import org.project.job.entity.Job;
 import org.project.job.service.EmployerService;
 import org.project.job.service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +20,13 @@ public class EmployerController {
     @Autowired private EmployerService employerService;
     @Autowired private JobService jobService;
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerEmployer(@RequestParam String token, @ModelAttribute EmployerDto employerDto) {
+    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> registerEmployer(@RequestBody EmployerDto employerDto) {
+        String token = employerDto.getToken();
         String message = employerService.registerEmployer(token, employerDto);
         return message.equals("valid") ?
                 ResponseEntity.ok("Bạn đã là nhà tuyển dụng") :
-                ResponseEntity.badRequest().body("Token không hợp lệ");
+                ResponseEntity.badRequest().body(message);
     }
 
     @PostMapping("/post_job")
