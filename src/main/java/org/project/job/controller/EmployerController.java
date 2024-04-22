@@ -3,6 +3,7 @@ package org.project.job.controller;
 import org.project.job.dto.EmployerDto;
 import org.project.job.dto.JobDto;
 import org.project.job.entity.Job;
+import org.project.job.response.JobResponse;
 import org.project.job.service.EmployerService;
 import org.project.job.service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class EmployerController {
 
     @GetMapping("/getJobList")
     public ResponseEntity<?> getJobList(@RequestParam String token) {
-        List<Job> jobs = jobService.getJobList(token);
+        List<JobResponse> jobs = jobService.getJobList(token);
         return jobs == null ?
                 ResponseEntity.badRequest().body("Token không hợp lệ") :
                 ResponseEntity.ok(jobs);

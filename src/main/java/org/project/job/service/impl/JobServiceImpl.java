@@ -7,12 +7,14 @@ import org.project.job.entity.VerificationToken;
 import org.project.job.repository.EmployerRepository;
 import org.project.job.repository.JobRepository;
 import org.project.job.repository.VerificationTokenRepository;
+import org.project.job.response.JobResponse;
 import org.project.job.service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,14 +26,32 @@ public class JobServiceImpl implements JobService {
     @Autowired private EmployerRepository employerRepository;
 
     @Override
-    public List<Job> getJobList(String token) {
+    public List<JobResponse> getJobList(String token) {
         Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
         if(verificationToken.isEmpty()) {
            return null;
         }
         User user = verificationToken.get().getUser();
         Employer employer = employerRepository.findByUser(user);
-        return jobRepository.findByEmployer(employer);
+        List<Job> jobs = jobRepository.findByEmployer(employer);
+        List<JobResponse> jobResponses = new ArrayList<>();
+
+        for(Job job : jobs) {
+            JobResponse jobResponse = JobResponse.builder()
+                    .id(job.getId())
+                    .title(job.getTitle())
+                    .salary(job.getSalary())
+                    .payrollPayment(job.getPayrollPayment())
+                    .workAddress(job.getWorkAddress())
+                    .types(job.getTypes())
+                    .description(job.getDescription())
+                    .diplomaRequire(job.getDiplomaRequire())
+                    .genderRequire(job.getGenderRequire())
+                    .workRequire(job.getWorkRequire())
+                    .position(job.getPosition())
+                    .build();
+        }
+        return jobResponses;
     }
 
     @Override
@@ -41,9 +61,27 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public List<Job> getJobs(Integer pageSize, Integer pageNumber, String sort) {
+    public List<JobResponse> getJobs(Integer pageSize, Integer pageNumber, String sort) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
         List<Job> jobs = jobRepository.findAll(page).getContent();
-        return jobs;
+        List<JobResponse> jobResponses = new ArrayList<>();
+
+        for(Job job : jobs) {
+            JobResponse jobResponse = JobResponse.builder()
+                    .id(job.getId())
+                    .title(job.getTitle())
+                    .salary(job.getSalary())
+                    .payrollPayment(job.getPayrollPayment())
+                    .workAddress(job.getWorkAddress())
+                    .types(job.getTypes())
+                    .description(job.getDescription())
+                    .diplomaRequire(job.getDiplomaRequire())
+                    .genderRequire(job.getGenderRequire())
+                    .workRequire(job.getWorkRequire())
+                    .position(job.getPosition())
+                    .build();
+        }
+
+        return jobResponses;
     }
 }
