@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/home")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class HomeController {
 
     @Autowired private JobService jobService;

@@ -24,6 +24,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/registration")
+@CrossOrigin(origins = "*")
 public class RegistrationController {
 
     @Autowired private UserService userService;

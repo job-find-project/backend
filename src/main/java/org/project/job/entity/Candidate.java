@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Blob;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -26,7 +28,7 @@ public class Candidate {
 
     @Lob
     @Column(length = 1000000000)
-    private byte[] CV;
+    private Blob CV;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
