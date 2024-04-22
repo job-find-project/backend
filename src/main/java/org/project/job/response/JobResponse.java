@@ -2,6 +2,7 @@ package org.project.job.response;
 
 import lombok.Builder;
 import lombok.Data;
+import org.project.job.entity.Employer;
 import org.project.job.entity.JobType;
 
 import java.util.List;
@@ -21,4 +22,5 @@ public class JobResponse {
     private String workRequire;
     private String genderRequire;
     private List<JobType> types;
+    private Employer employer;
 }

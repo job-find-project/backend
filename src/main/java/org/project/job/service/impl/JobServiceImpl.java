@@ -49,6 +49,7 @@ public class JobServiceImpl implements JobService {
                     .genderRequire(job.getGenderRequire())
                     .workRequire(job.getWorkRequire())
                     .position(job.getPosition())
+                    .employer(job.getEmployer())
                     .build();
             jobResponses.add(jobResponse);
         }
@@ -80,6 +81,7 @@ public class JobServiceImpl implements JobService {
                     .genderRequire(job.getGenderRequire())
                     .workRequire(job.getWorkRequire())
                     .position(job.getPosition())
+                    .employer(job.getEmployer())
                     .build();
             jobResponses.add(jobResponse);
         }
