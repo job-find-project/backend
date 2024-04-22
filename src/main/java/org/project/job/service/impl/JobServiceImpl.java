@@ -50,6 +50,7 @@ public class JobServiceImpl implements JobService {
                     .workRequire(job.getWorkRequire())
                     .position(job.getPosition())
                     .build();
+            jobResponses.add(jobResponse);
         }
         return jobResponses;
     }
@@ -80,6 +81,7 @@ public class JobServiceImpl implements JobService {
                     .workRequire(job.getWorkRequire())
                     .position(job.getPosition())
                     .build();
+            jobResponses.add(jobResponse);
         }
 
         return jobResponses;
